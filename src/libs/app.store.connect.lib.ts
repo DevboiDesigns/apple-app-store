@@ -210,7 +210,7 @@ export class AppStoreBetaTesterLib {
   }
 }
 
-//**************** TEST SETUP */
+//**************** TEST SETUP ***********************/
 // Usage example: update "Public Testing" group to match a new email list
 ;(async () => {
   const service = new AppStoreBetaTesterLib()
