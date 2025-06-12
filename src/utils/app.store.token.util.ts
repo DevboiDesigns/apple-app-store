@@ -2,9 +2,9 @@ import { sign, SignOptions } from "jsonwebtoken"
 import {
   APP_STORE_BUNDLE_ID,
   APP_STORE_ISSUER_ID,
-  APP_STORE_CONNECT_KEY,
+  // APP_STORE_CONNECT_KEY,   // We access this via process.env. for testing
   APP_STORE_CONNECT_KEY_ID,
-  APP_STORE_KIT_KEY,
+  // APP_STORE_KIT_KEY,       // We access this via process.env. for testing
   APP_STORE_KIT_KEY_ID,
 } from "../config/env.keys"
 import fs from "fs"
@@ -54,15 +54,15 @@ export class AppleStoreKitToken {
    * The token is used to authenticate requests to the Apple App Store Server API.
    */
   static token = (type: TokenType): string => {
-    console.debug(`Generating Apple JWT for type: ${type}`)
-    console.debug(`APP_STORE_BUNDLE_ID: ${APP_STORE_BUNDLE_ID}`)
-    console.debug(`APPLE_ISSUER_ID: ${APP_STORE_ISSUER_ID}`)
-    console.debug(`APP_STORE_CONNECT_KEY_ID: ${APP_STORE_CONNECT_KEY_ID}`)
-    console.debug(`APP_STORE_KIT_KEY_ID: ${APP_STORE_KIT_KEY_ID}`)
-    console.debug(`APP_STORE_CONNECT_KEY: ${APP_STORE_CONNECT_KEY}`)
-    console.debug(`APP_STORE_KIT_KEY: ${APP_STORE_KIT_KEY}`)
-    console.debug(`APP_IS_LOCAL: ${process.env.APP_IS_LOCAL}`)
-    console.debug(`NODE_ENV: ${process.env.NODE_ENV}`)
+    // console.debug(`Generating Apple JWT for type: ${type}`)
+    // console.debug(`APP_STORE_BUNDLE_ID: ${APP_STORE_BUNDLE_ID}`)
+    // console.debug(`APPLE_ISSUER_ID: ${APP_STORE_ISSUER_ID}`)
+    // console.debug(`APP_STORE_CONNECT_KEY_ID: ${APP_STORE_CONNECT_KEY_ID}`)
+    // console.debug(`APP_STORE_KIT_KEY_ID: ${APP_STORE_KIT_KEY_ID}`)
+    // console.debug(`APP_STORE_CONNECT_KEY: ${APP_STORE_CONNECT_KEY}`)
+    // console.debug(`APP_STORE_KIT_KEY: ${APP_STORE_KIT_KEY}`)
+    // console.debug(`APP_IS_LOCAL: ${process.env.APP_IS_LOCAL}`)
+    // console.debug(`NODE_ENV: ${process.env.NODE_ENV}`)
     try {
       const privateKey = this.readPrivateKey(type)
       if (!privateKey) {
