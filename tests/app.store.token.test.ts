@@ -1,3 +1,12 @@
+/**
+ * Basic integration tests for AppleStoreKitToken
+ * 
+ * Note: More comprehensive unit tests with mocks are available in:
+ * - app.store.token.util.test.ts (unit tests with full mocking)
+ * 
+ * This file contains basic integration tests that require actual environment variables.
+ */
+
 import { AppleStoreKitToken } from "../src/utils/app.store.token.util"
 import jwt from "jsonwebtoken"
 
