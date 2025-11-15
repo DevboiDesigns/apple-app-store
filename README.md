@@ -2,6 +2,8 @@
 
 A TypeScript library for interacting with Apple's App Store Connect API and StoreKit API. This package provides utilities for managing beta testers, fetching app information, generating JWT tokens for authentication, and testing API connectivity.
 
+[![NPM Downloads](https://img.shields.io/npm/v/:apple-api-library)](https://www.npmjs.com/package/apple-api-library)
+
 ## Table of Contents
 
 - [Installation](#installation)
