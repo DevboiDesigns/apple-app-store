@@ -2,6 +2,8 @@
 
 A TypeScript library for interacting with Apple's App Store Connect API and StoreKit API. This package provides utilities for managing beta testers, fetching app information, generating JWT tokens for authentication, and testing API connectivity.
 
+[![NPM Downloads](https://img.shields.io/npm/v/apple-api-library)](https://www.npmjs.com/package/apple-api-library)
+
 ## Table of Contents
 
 - [Installation](#installation)
@@ -25,13 +27,13 @@ A TypeScript library for interacting with Apple's App Store Connect API and Stor
 Install the package using npm:
 
 ```bash
-npm install @devboidesigns/npm-template
+npm install apple-api-library
 ```
 
 Or using yarn:
 
 ```bash
-yarn add @devboidesigns/npm-template
+yarn add apple-api-library
 ```
 
 ### Peer Dependencies
@@ -54,12 +56,14 @@ Before using this library, you need:
 
 1. **Apple Developer Account** - An active Apple Developer account
 2. **App Store Connect API Key** - Generate an API key in App Store Connect:
+
    - Go to [App Store Connect](https://appstoreconnect.apple.com)
    - Navigate to Users and Access → Keys → App Store Connect API
    - Create a new key and download the `.p8` private key file
    - Note the Key ID and Issuer ID
 
 3. **StoreKit API Key** (optional) - If you plan to use StoreKit features:
+
    - Generate a separate API key for StoreKit
    - Download the `.p8` private key file
    - Note the Key ID
@@ -94,24 +98,26 @@ APP_IS_LOCAL=true  # Set to "true" if running locally (reads key from file path)
 
 ### Environment Variable Details
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `APP_STORE_ISSUER_ID` | Yes | Your Issuer ID from App Store Connect |
-| `APP_STORE_BUNDLE_ID` | Yes | Your app's bundle identifier (e.g., `com.company.app`) |
-| `APP_APPLE_ID` | Yes | Your app's Apple ID (numeric ID from App Store Connect) |
-| `APP_STORE_CONNECT_KEY_ID` | Yes | The Key ID for your App Store Connect API key |
-| `APP_STORE_CONNECT_KEY` | Yes | Path to your `.p8` private key file OR the key content itself |
-| `APP_STORE_KIT_KEY_ID` | No | The Key ID for your StoreKit API key (if using StoreKit) |
-| `APP_STORE_KIT_KEY` | No | Path to your StoreKit `.p8` private key file OR the key content |
-| `APP_IS_LOCAL` | No | Set to `"true"` if running locally (reads key from file path) |
+| Variable                   | Required | Description                                                     |
+| -------------------------- | -------- | --------------------------------------------------------------- |
+| `APP_STORE_ISSUER_ID`      | Yes      | Your Issuer ID from App Store Connect                           |
+| `APP_STORE_BUNDLE_ID`      | Yes      | Your app's bundle identifier (e.g., `com.company.app`)          |
+| `APP_APPLE_ID`             | Yes      | Your app's Apple ID (numeric ID from App Store Connect)         |
+| `APP_STORE_CONNECT_KEY_ID` | Yes      | The Key ID for your App Store Connect API key                   |
+| `APP_STORE_CONNECT_KEY`    | Yes      | Path to your `.p8` private key file OR the key content itself   |
+| `APP_STORE_KIT_KEY_ID`     | No       | The Key ID for your StoreKit API key (if using StoreKit)        |
+| `APP_STORE_KIT_KEY`        | No       | Path to your StoreKit `.p8` private key file OR the key content |
+| `APP_IS_LOCAL`             | No       | Set to `"true"` if running locally (reads key from file path)   |
 
 ### Key File Setup
 
 **For Local Development (`APP_IS_LOCAL=true`):**
+
 - Set `APP_STORE_CONNECT_KEY` to the file path: `/path/to/AuthKey_N262NK6NP4.p8`
 - The library will read the key file from disk
 
 **For Production (`APP_IS_LOCAL` not set or `false`):**
+
 - Set `APP_STORE_CONNECT_KEY` to the actual key content (the entire contents of the `.p8` file)
 - This is typically done via environment variables in your hosting platform
 
@@ -120,30 +126,30 @@ APP_IS_LOCAL=true  # Set to "true" if running locally (reads key from file path)
 ### Basic Setup
 
 ```typescript
-import { AppStoreLib } from '@devboidesigns/npm-template'
+import { AppStoreLib } from "apple-api-library"
 
 // Initialize the library
 const appStore = new AppStoreLib()
 
 // Fetch all apps
 const apps = await appStore.getApps()
-console.log('Apps:', apps)
+console.log("Apps:", apps)
 ```
 
 ### Beta Tester Management
 
 ```typescript
-import { AppStoreBetaTesterLib } from '@devboidesigns/npm-template'
+import { AppStoreBetaTesterLib } from "apple-api-library"
 
 // Initialize the beta tester library
 const betaTesterLib = new AppStoreBetaTesterLib()
 
 // Add a tester to a beta group by name
 await betaTesterLib.addTesterToGroupByName(
-  'Public Testing',
-  'tester@example.com',
-  'John',
-  'Doe'
+  "Public Testing",
+  "tester@example.com",
+  "John",
+  "Doe"
 )
 ```
 
@@ -160,6 +166,7 @@ Utility class for generating JWT tokens for Apple API authentication.
 Generates a JWT token for Apple API authentication.
 
 **Parameters:**
+
 - `type` (`"connect" | "store-kit"`): The type of token to generate
   - `"connect"`: For App Store Connect API
   - `"store-kit"`: For App Store StoreKit v2 API
@@ -173,13 +180,13 @@ Generates a JWT token for Apple API authentication.
 **Example:**
 
 ```typescript
-import { AppleStoreKitToken } from '@devboidesigns/npm-template'
+import { AppleStoreKitToken } from "apple-api-library"
 
 // Generate token for App Store Connect API
-const connectToken = AppleStoreKitToken.token('connect')
+const connectToken = AppleStoreKitToken.token("connect")
 
 // Generate token for StoreKit API
-const storeKitToken = AppleStoreKitToken.token('store-kit')
+const storeKitToken = AppleStoreKitToken.token("store-kit")
 ```
 
 ---
@@ -209,7 +216,7 @@ Fetches all apps associated with your Apple Developer account.
 ```typescript
 const appStore = new AppStoreLib()
 const apps = await appStore.getApps()
-apps.forEach(app => {
+apps.forEach((app) => {
   console.log(`App: ${app.attributes.name} (ID: ${app.id})`)
 })
 ```
@@ -219,6 +226,7 @@ apps.forEach(app => {
 Fetches detailed information about a specific app.
 
 **Parameters:**
+
 - `appId` (`string`): The Apple ID of the app
 
 **Returns:** `Promise<any>` - App details object
@@ -227,8 +235,8 @@ Fetches detailed information about a specific app.
 
 ```typescript
 const appStore = new AppStoreLib()
-const appDetails = await appStore.getAppDetails('1234567890')
-console.log('App Details:', appDetails)
+const appDetails = await appStore.getAppDetails("1234567890")
+console.log("App Details:", appDetails)
 ```
 
 ---
@@ -252,6 +260,7 @@ new AppStoreBetaTesterLib()
 Adds a tester to a beta group by group name. If the tester doesn't exist, they will be created automatically.
 
 **Parameters:**
+
 - `groupName` (`string`): Name of the beta group
 - `email` (`string`): Email address of the tester
 - `firstName` (`string`, optional): First name of the tester
@@ -264,10 +273,10 @@ Adds a tester to a beta group by group name. If the tester doesn't exist, they w
 ```typescript
 const betaLib = new AppStoreBetaTesterLib()
 await betaLib.addTesterToGroupByName(
-  'Public Testing',
-  'tester@example.com',
-  'Jane',
-  'Smith'
+  "Public Testing",
+  "tester@example.com",
+  "Jane",
+  "Smith"
 )
 ```
 
@@ -282,7 +291,7 @@ Retrieves all beta groups for your app.
 ```typescript
 const betaLib = new AppStoreBetaTesterLib()
 const groups = await betaLib.getBetaGroups()
-groups.forEach(group => {
+groups.forEach((group) => {
   console.log(`Group: ${group.attributes.name} (ID: ${group.id})`)
 })
 ```
@@ -292,6 +301,7 @@ groups.forEach(group => {
 Finds a beta group ID by its name.
 
 **Parameters:**
+
 - `groupName` (`string`): Name of the beta group
 
 **Returns:** `Promise<string | null>` - The group ID if found, `null` otherwise
@@ -300,7 +310,7 @@ Finds a beta group ID by its name.
 
 ```typescript
 const betaLib = new AppStoreBetaTesterLib()
-const groupId = await betaLib.getBetaGroupIdByName('Public Testing')
+const groupId = await betaLib.getBetaGroupIdByName("Public Testing")
 if (groupId) {
   console.log(`Group ID: ${groupId}`)
 }
@@ -311,6 +321,7 @@ if (groupId) {
 Lists all testers in a specific beta group.
 
 **Parameters:**
+
 - `betaGroupId` (`string`): The ID of the beta group
 
 **Returns:** `Promise<any[]>` - Array of tester objects
@@ -319,10 +330,10 @@ Lists all testers in a specific beta group.
 
 ```typescript
 const betaLib = new AppStoreBetaTesterLib()
-const groupId = await betaLib.getBetaGroupIdByName('Public Testing')
+const groupId = await betaLib.getBetaGroupIdByName("Public Testing")
 if (groupId) {
   const testers = await betaLib.getBetaTestersInGroup(groupId)
-  testers.forEach(tester => {
+  testers.forEach((tester) => {
     console.log(`Tester: ${tester.attributes.email}`)
   })
 }
@@ -333,6 +344,7 @@ if (groupId) {
 Lists all beta testers (across all groups) with pagination support.
 
 **Parameters:**
+
 - `nextUrl` (`string`, optional): URL for the next page of results
 
 **Returns:** `Promise<any>` - Object containing `data` array and `links` object with pagination info
@@ -367,6 +379,7 @@ console.log(`Total testers: ${allTesters.length}`)
 Adds a tester to a beta group by group ID. If the tester doesn't exist, they will be created automatically.
 
 **Parameters:**
+
 - `betaGroupId` (`string`): The ID of the beta group
 - `email` (`string`): Email address of the tester
 - `firstName` (`string`, optional): First name of the tester
@@ -379,10 +392,10 @@ Adds a tester to a beta group by group ID. If the tester doesn't exist, they wil
 ```typescript
 const betaLib = new AppStoreBetaTesterLib()
 await betaLib.addTesterToGroup(
-  'abc123-group-id',
-  'tester@example.com',
-  'John',
-  'Doe'
+  "abc123-group-id",
+  "tester@example.com",
+  "John",
+  "Doe"
 )
 ```
 
@@ -391,6 +404,7 @@ await betaLib.addTesterToGroup(
 Removes a tester from a beta group.
 
 **Parameters:**
+
 - `betaGroupId` (`string`): The ID of the beta group
 - `testerId` (`string`): The ID of the tester
 
@@ -398,7 +412,7 @@ Removes a tester from a beta group.
 
 ```typescript
 const betaLib = new AppStoreBetaTesterLib()
-const groupId = await betaLib.getBetaGroupIdByName('Public Testing')
+const groupId = await betaLib.getBetaGroupIdByName("Public Testing")
 const testers = await betaLib.getBetaTestersInGroup(groupId)
 if (testers.length > 0) {
   await betaLib.removeTesterFromGroup(groupId, testers[0].id)
@@ -408,10 +422,12 @@ if (testers.length > 0) {
 ##### `updatePublicTestingGroup(emails: string[]): Promise<void>`
 
 Updates the "Public Testing" beta group to match a new list of email addresses. This method will:
+
 - Add any new email addresses that aren't in the group
 - Remove any testers whose emails aren't in the provided list
 
 **Parameters:**
+
 - `emails` (`string[]`): Array of email addresses to sync with the group
 
 **Throws:** `Error` - If "Public Testing" group is not found
@@ -421,9 +437,9 @@ Updates the "Public Testing" beta group to match a new list of email addresses. 
 ```typescript
 const betaLib = new AppStoreBetaTesterLib()
 const emails = [
-  'tester1@example.com',
-  'tester2@example.com',
-  'tester3@example.com'
+  "tester1@example.com",
+  "tester2@example.com",
+  "tester3@example.com",
 ]
 await betaLib.updatePublicTestingGroup(emails)
 ```
@@ -433,6 +449,7 @@ await betaLib.updatePublicTestingGroup(emails)
 Fetches a beta tester by their email address.
 
 **Parameters:**
+
 - `email` (`string`): Email address of the tester
 
 **Returns:** `Promise<any | null>` - Tester object if found, `null` otherwise
@@ -441,7 +458,7 @@ Fetches a beta tester by their email address.
 
 ```typescript
 const betaLib = new AppStoreBetaTesterLib()
-const tester = await betaLib.getBetaTesterByEmail('tester@example.com')
+const tester = await betaLib.getBetaTesterByEmail("tester@example.com")
 if (tester) {
   console.log(`Found tester: ${tester.id}`)
 }
@@ -464,13 +481,13 @@ Tests the Apple JWT token by making a request to the App Store Connect API.
 **Example:**
 
 ```typescript
-import { TestNotification } from '@devboidesigns/npm-template'
+import { TestNotification } from "apple-api-library"
 
 try {
   await TestNotification.test()
-  console.log('API connection successful!')
+  console.log("API connection successful!")
 } catch (error) {
-  console.error('API connection failed:', error)
+  console.error("API connection failed:", error)
 }
 ```
 
@@ -483,13 +500,13 @@ Sends a test notification to the StoreKit API. **Note:** This requires at least 
 **Example:**
 
 ```typescript
-import { TestNotification } from '@devboidesigns/npm-template'
+import { TestNotification } from "apple-api-library"
 
 try {
   await TestNotification.testNotification()
-  console.log('Test notification sent successfully!')
+  console.log("Test notification sent successfully!")
 } catch (error) {
-  console.error('Failed to send test notification:', error)
+  console.error("Failed to send test notification:", error)
 }
 ```
 
@@ -500,25 +517,28 @@ try {
 ### Example 1: Managing Beta Testers
 
 ```typescript
-import { AppStoreBetaTesterLib } from '@devboidesigns/npm-template'
+import { AppStoreBetaTesterLib } from "apple-api-library"
 
 async function manageBetaTesters() {
   const betaLib = new AppStoreBetaTesterLib()
 
   // Get all beta groups
   const groups = await betaLib.getBetaGroups()
-  console.log('Available beta groups:', groups.map(g => g.attributes.name))
+  console.log(
+    "Available beta groups:",
+    groups.map((g) => g.attributes.name)
+  )
 
   // Add a new tester to a group
   await betaLib.addTesterToGroupByName(
-    'Public Testing',
-    'newtester@example.com',
-    'Alice',
-    'Johnson'
+    "Public Testing",
+    "newtester@example.com",
+    "Alice",
+    "Johnson"
   )
 
   // Get all testers in a group
-  const groupId = await betaLib.getBetaGroupIdByName('Public Testing')
+  const groupId = await betaLib.getBetaGroupIdByName("Public Testing")
   if (groupId) {
     const testers = await betaLib.getBetaTestersInGroup(groupId)
     console.log(`Testers in Public Testing: ${testers.length}`)
@@ -526,9 +546,9 @@ async function manageBetaTesters() {
 
   // Update the Public Testing group with a new list
   const newTesterList = [
-    'tester1@example.com',
-    'tester2@example.com',
-    'tester3@example.com'
+    "tester1@example.com",
+    "tester2@example.com",
+    "tester3@example.com",
   ]
   await betaLib.updatePublicTestingGroup(newTesterList)
 }
@@ -539,7 +559,7 @@ manageBetaTesters().catch(console.error)
 ### Example 2: Fetching App Information
 
 ```typescript
-import { AppStoreLib } from '@devboidesigns/npm-template'
+import { AppStoreLib } from "apple-api-library"
 
 async function getAppInfo() {
   const appStore = new AppStoreLib()
@@ -551,7 +571,7 @@ async function getAppInfo() {
   // Get details for a specific app
   if (apps.length > 0) {
     const appDetails = await appStore.getAppDetails(apps[0].id)
-    console.log('App Details:', JSON.stringify(appDetails, null, 2))
+    console.log("App Details:", JSON.stringify(appDetails, null, 2))
   }
 }
 
@@ -561,15 +581,15 @@ getAppInfo().catch(console.error)
 ### Example 3: Testing API Connection
 
 ```typescript
-import { TestNotification } from '@devboidesigns/npm-template'
+import { TestNotification } from "apple-api-library"
 
 async function testConnection() {
   try {
-    console.log('Testing App Store Connect API connection...')
+    console.log("Testing App Store Connect API connection...")
     await TestNotification.test()
-    console.log('✓ Connection successful!')
+    console.log("✓ Connection successful!")
   } catch (error) {
-    console.error('✗ Connection failed:', error)
+    console.error("✗ Connection failed:", error)
   }
 }
 
@@ -579,16 +599,16 @@ testConnection()
 ### Example 4: Bulk Beta Tester Management
 
 ```typescript
-import { AppStoreBetaTesterLib } from '@devboidesigns/npm-template'
+import { AppStoreBetaTesterLib } from "apple-api-library"
 
 async function bulkAddTesters() {
   const betaLib = new AppStoreBetaTesterLib()
-  const groupName = 'Public Testing'
+  const groupName = "Public Testing"
 
   const testers = [
-    { email: 'tester1@example.com', firstName: 'John', lastName: 'Doe' },
-    { email: 'tester2@example.com', firstName: 'Jane', lastName: 'Smith' },
-    { email: 'tester3@example.com', firstName: 'Bob', lastName: 'Johnson' }
+    { email: "tester1@example.com", firstName: "John", lastName: "Doe" },
+    { email: "tester2@example.com", firstName: "Jane", lastName: "Smith" },
+    { email: "tester3@example.com", firstName: "Bob", lastName: "Johnson" },
   ]
 
   for (const tester of testers) {
@@ -614,27 +634,24 @@ bulkAddTesters().catch(console.error)
 The library throws errors in various scenarios. Always wrap API calls in try-catch blocks:
 
 ```typescript
-import { AppStoreBetaTesterLib } from '@devboidesigns/npm-template'
+import { AppStoreBetaTesterLib } from "apple-api-library"
 
 async function safeAddTester() {
   const betaLib = new AppStoreBetaTesterLib()
 
   try {
-    await betaLib.addTesterToGroupByName(
-      'Public Testing',
-      'tester@example.com'
-    )
-    console.log('Tester added successfully')
+    await betaLib.addTesterToGroupByName("Public Testing", "tester@example.com")
+    console.log("Tester added successfully")
   } catch (error: any) {
     if (error.response) {
       // API error response
-      console.error('API Error:', error.response.status, error.response.data)
+      console.error("API Error:", error.response.status, error.response.data)
     } else if (error.message) {
       // General error
-      console.error('Error:', error.message)
+      console.error("Error:", error.message)
     } else {
       // Unknown error
-      console.error('Unknown error:', error)
+      console.error("Unknown error:", error)
     }
   }
 }
@@ -643,14 +660,17 @@ async function safeAddTester() {
 ### Common Error Scenarios
 
 1. **Token Generation Failure**
+
    - **Cause:** Missing or invalid private key
    - **Solution:** Verify environment variables are set correctly
 
 2. **Beta Group Not Found**
+
    - **Cause:** Group name doesn't exist or is misspelled
    - **Solution:** Use `getBetaGroups()` to list available groups
 
 3. **Tester Already Exists (409 Conflict)**
+
    - **Cause:** Tester email already registered
    - **Solution:** The library handles this automatically, but you can check with `getBetaTesterByEmail()` first
 
@@ -663,11 +683,13 @@ async function safeAddTester() {
 ### Issue: "Failed to generate App Store Connect token"
 
 **Possible Causes:**
+
 - Environment variables not set correctly
 - Private key file path incorrect (for local development)
 - Private key content invalid (for production)
 
 **Solutions:**
+
 1. Verify all required environment variables are set
 2. For local development, ensure `APP_IS_LOCAL=true` and the file path is correct
 3. For production, ensure the key content is properly escaped in your environment variable
@@ -676,10 +698,12 @@ async function safeAddTester() {
 ### Issue: "Beta group not found"
 
 **Possible Causes:**
+
 - Group name is misspelled or doesn't exist
 - Wrong app Apple ID configured
 
 **Solutions:**
+
 1. List all groups using `getBetaGroups()` to see available names
 2. Verify `APP_APPLE_ID` matches your app in App Store Connect
 3. Check group names are case-sensitive
@@ -687,10 +711,12 @@ async function safeAddTester() {
 ### Issue: "No subscription products found" (StoreKit)
 
 **Possible Causes:**
+
 - No active subscription products configured in App Store Connect
 - Wrong StoreKit API key configured
 
 **Solutions:**
+
 1. Ensure you have at least one active subscription product in App Store Connect
 2. Verify StoreKit API key configuration
 3. Check that `APP_STORE_KIT_KEY_ID` and `APP_STORE_KIT_KEY` are set correctly
@@ -698,10 +724,12 @@ async function safeAddTester() {
 ### Issue: API requests timing out
 
 **Possible Causes:**
+
 - Network connectivity issues
 - Apple API rate limiting
 
 **Solutions:**
+
 1. Check your internet connection
 2. Implement retry logic with exponential backoff
 3. Reduce request frequency if hitting rate limits

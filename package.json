@@ -1,6 +1,6 @@
 {
-  "name": "@devboidesigns/npm-template",
-  "version": "0.0.1",
+  "name": "apple-api-library",
+  "version": "1.0.3",
   "description": "",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -8,16 +8,14 @@
   "files": [
     "dist"
   ],
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/DevboiDesigns/npm-template.git"
+    "url": "https://github.com/DevboiDesigns/apple-app-store.git"
   },
   "scripts": {
     "build": "tsup",
-    "test": "jest"
+    "test": "jest",
+    "release": "npm run build && sudo npm publish"
   },
   "author": "Christopher Hicks",
   "license": "ISC",
