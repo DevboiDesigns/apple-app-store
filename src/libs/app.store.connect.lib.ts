@@ -41,17 +41,17 @@ export class AppStoreBetaTesterLib {
         headers: { Authorization: `Bearer ${this.token}` },
       }
     )
-    console.log("Beta groups response:", res.data)
+    // console.log("Beta groups response:", res.data)
     return res.data.data // Array of groups
   }
 
   // Get beta group ID by group name
   getBetaGroupIdByName = async (groupName: string) => {
     const groups = await this.getBetaGroups()
-    console.log(
-      "Available groups:",
-      groups.map((g: any) => g.attributes.name)
-    )
+    // console.log(
+    //   "Available groups:",
+    //   groups.map((g: any) => g.attributes.name)
+    // )
     const group = groups.find((g: any) => g.attributes.name === groupName)
     if (!group) {
       console.error(`Group "${groupName}" not found.`)
@@ -66,7 +66,7 @@ export class AppStoreBetaTesterLib {
     const res = await axios.get(url, {
       headers: { Authorization: `Bearer ${this.token}` },
     })
-    console.log("Testers in group response:", res.data)
+    // console.log("Testers in group response:", res.data)
     return res.data.data // Array of testers in the group
   }
 
@@ -111,6 +111,8 @@ export class AppStoreBetaTesterLib {
     let testerId: string | null = null
     try {
       // 1. Create the tester if they don't exist
+      // Note: Apple requires either betaGroups or builds relationship when creating a tester
+      // We'll create the tester with the betaGroups relationship included
       const createRes = await axios.post(
         `https://api.appstoreconnect.apple.com/v1/betaTesters`,
         {
@@ -121,20 +123,136 @@ export class AppStoreBetaTesterLib {
               ...(firstName ? { firstName } : {}),
               ...(lastName ? { lastName } : {}),
             },
+            relationships: {
+              betaGroups: {
+                data: [{ type: "betaGroups", id: betaGroupId }],
+              },
+            },
           },
         },
         { headers: { Authorization: `Bearer ${this.token}` } }
       )
       testerId = createRes.data.data.id
-      console.log(`Created tester with id: ${testerId} for email: ${email}`)
+      console.log(
+        `Created tester with id: ${testerId} for email: ${email} and added to group ${betaGroupId}`
+      )
+      // If tester was created with the relationship, they're already in the group
+      return
     } catch (err: any) {
-      // If tester already exists, find their ID
+      // Check if this is a "relationship required" error vs "tester already exists"
+      const errorData = err.response?.data
+      const errorDetail = errorData?.errors?.[0]?.detail || ""
+      const isRelationshipError =
+        errorDetail.includes("relationship is required") ||
+        errorDetail.includes("betaGroups or builds")
+
+      // Handle 409 errors - could be "tester already exists" or "relationship required"
+      // In both cases, we need to find the tester ID
       if (err.response && err.response.status === 409) {
-        // Try to fetch tester by email using filter
-        const tester = await this.getBetaTesterByEmail(email)
-        testerId = tester ? tester.id : null
+        if (isRelationshipError) {
+          console.log(
+            `Relationship required error (409) - tester may already exist. Attempting to find tester ID for email: ${email}`
+          )
+        } else {
+          console.log(
+            `Tester already exists (409). Attempting to find tester ID for email: ${email}`
+          )
+        }
+
+        // Strategy 1: Try to extract tester ID from error response
+        // Apple sometimes includes the existing resource in the error response
+        if (errorData) {
+          // Check for existingResources in meta
+          if (errorData.errors?.[0]?.meta?.existingResources) {
+            const existingResources = errorData.errors[0].meta.existingResources
+            if (
+              Array.isArray(existingResources) &&
+              existingResources.length > 0
+            ) {
+              testerId = existingResources[0].id
+              console.log(
+                `Found tester ID from error response meta: ${testerId} for email: ${email}`
+              )
+            }
+          }
+
+          // Check for included resources (Apple sometimes includes related resources)
+          if (!testerId && errorData.included) {
+            const testerResource = errorData.included.find(
+              (r: any) =>
+                r.type === "betaTesters" && r.attributes?.email === email
+            )
+            if (testerResource) {
+              testerId = testerResource.id
+              console.log(
+                `Found tester ID from error response included: ${testerId} for email: ${email}`
+              )
+            }
+          }
+
+          // Log full error response for debugging if we still don't have an ID
+          if (!testerId) {
+            console.log(
+              `Error response structure (for debugging):`,
+              JSON.stringify(errorData, null, 2).substring(0, 500)
+            )
+          }
+        }
+
+        // Strategy 2: Try to fetch tester by email using filter
+        if (!testerId) {
+          console.log(`Attempting to fetch tester by email filter...`)
+          const tester = await this.getBetaTesterByEmail(email)
+          testerId = tester ? tester.id : null
+          if (testerId) {
+            console.log(
+              `Found tester ID via email filter: ${testerId} for email: ${email}`
+            )
+          }
+        }
+
+        // Strategy 3: Fallback - search through all testers (with pagination)
+        if (!testerId) {
+          console.log(
+            `Email filter failed. Attempting to search all testers for email: ${email}`
+          )
+          try {
+            const allTesters = await this.getAllBetaTesters()
+            const tester = allTesters.find(
+              (t: any) =>
+                t.attributes?.email &&
+                t.attributes.email.toLowerCase() === email.toLowerCase()
+            )
+            testerId = tester ? tester.id : null
+            if (testerId) {
+              console.log(
+                `Found tester ID via full search: ${testerId} for email: ${email}`
+              )
+            } else {
+              console.log(
+                `Tester not found in ${allTesters.length} total testers for email: ${email}`
+              )
+            }
+          } catch (searchErr: any) {
+            console.error(
+              `Error searching all testers:`,
+              searchErr.response?.data || searchErr
+            )
+          }
+        }
+
+        if (!testerId) {
+          console.error(
+            `Could not find tester ID. Error response:`,
+            JSON.stringify(err.response?.data, null, 2)
+          )
+          throw new Error(
+            `Tester with email ${email} already exists but could not be found. This may be due to API delays or permissions issues.`
+          )
+        }
+
         console.log(
-          `Tester already exists. Found id: ${testerId} for email: ${email}`
+          `Tester already exists. Using id: ${testerId} for email: ${email}`
         )
       } else {
         console.error("Error creating tester:", err.response?.data || err)
@@ -143,7 +261,25 @@ export class AppStoreBetaTesterLib {
     }
     if (!testerId) throw new Error("Tester not found or could not be created")
 
-    // 2. Add tester to group using the documented endpoint
+    // 2. Check if tester is already in the group to avoid unnecessary API calls
+    try {
+      const currentTesters = await this.getBetaTestersInGroup(betaGroupId)
+      const alreadyInGroup = currentTesters.some((t: any) => t.id === testerId)
+      if (alreadyInGroup) {
+        console.log(
+          `Tester ${testerId} (${email}) is already in group ${betaGroupId}. Skipping add.`
+        )
+        return // Success - tester is already in the group
+      }
+    } catch (checkErr: any) {
+      // If we can't check, proceed with adding anyway
+      console.log(
+        `Could not verify if tester is in group, proceeding with add:`,
+        checkErr.message
+      )
+    }
+
+    // 3. Add tester to group using the documented endpoint
     const url = `https://api.appstoreconnect.apple.com/v1/betaGroups/${betaGroupId}/relationships/betaTesters`
     try {
       await axios.post(
@@ -154,11 +290,79 @@ export class AppStoreBetaTesterLib {
         { headers: { Authorization: `Bearer ${this.token}` } }
       )
       console.log(
-        `Successfully added tester ${testerId} to group ${betaGroupId}`
+        `Successfully added tester ${testerId} (${email}) to group ${betaGroupId}`
       )
     } catch (err: any) {
-      console.error("Error adding tester to group:", err.response?.data || err)
-      throw err
+      // Handle different error scenarios
+      if (err.response) {
+        const status = err.response.status
+        const errorData = err.response.data
+
+        // 409 Conflict - tester might already be in group (race condition)
+        if (status === 409) {
+          // Double-check if tester is now in the group
+          try {
+            const currentTesters = await this.getBetaTestersInGroup(betaGroupId)
+            const nowInGroup = currentTesters.some(
+              (t: any) => t.id === testerId
+            )
+            if (nowInGroup) {
+              console.log(
+                `Tester ${testerId} (${email}) is now in group ${betaGroupId} (race condition resolved).`
+              )
+              return // Success - tester is in the group
+            }
+          } catch (checkErr) {
+            // Ignore check errors
+          }
+
+          // If still not in group, log the error details
+          console.error(
+            `409 Conflict when adding tester to group. Error details:`,
+            JSON.stringify(errorData, null, 2)
+          )
+          throw new Error(
+            `Failed to add tester ${email} to group: Conflict (409). The tester may already be in the group or there may be a permissions issue. Error: ${JSON.stringify(
+              errorData
+            )}`
+          )
+        }
+
+        // 404 Not Found - group or tester doesn't exist
+        if (status === 404) {
+          throw new Error(
+            `Failed to add tester ${email} to group: Group (${betaGroupId}) or tester (${testerId}) not found (404).`
+          )
+        }
+
+        // 403 Forbidden - permissions issue
+        if (status === 403) {
+          throw new Error(
+            `Failed to add tester ${email} to group: Permission denied (403). Check your API key permissions.`
+          )
+        }
+
+        // Other errors
+        console.error(
+          `Error adding tester to group (${status}):`,
+          JSON.stringify(errorData, null, 2)
+        )
+        throw new Error(
+          `Failed to add tester ${email} to group: ${status} ${
+            errorData?.errors?.[0]?.detail ||
+            errorData?.errors?.[0]?.title ||
+            "Unknown error"
+          }`
+        )
+      }
+
+      // Network or other errors
+      console.error("Error adding tester to group:", err.message || err)
+      throw new Error(
+        `Failed to add tester ${email} to group: ${
+          err.message || "Unknown error"
+        }`
+      )
     }
   }
 
@@ -202,11 +406,29 @@ export class AppStoreBetaTesterLib {
 
   // Fetch a tester by email using the filter endpoint
   getBetaTesterByEmail = async (email: string) => {
-    const url = `https://api.appstoreconnect.apple.com/v1/betaTesters?filter[email]=${encodeURIComponent(email)}`
-    const res = await axios.get(url, {
-      headers: { Authorization: `Bearer ${this.token}` },
-    })
-    return res.data.data && res.data.data.length > 0 ? res.data.data[0] : null
+    try {
+      // Try exact match first
+      const url = `https://api.appstoreconnect.apple.com/v1/betaTesters?filter[email]=${encodeURIComponent(
+        email
+      )}`
+      const res = await axios.get(url, {
+        headers: { Authorization: `Bearer ${this.token}` },
+      })
+
+      if (res.data.data && res.data.data.length > 0) {
+        return res.data.data[0]
+      }
+
+      // If no exact match, try case-insensitive search through results
+      // Note: Apple's API filter is case-sensitive, so we may need to search manually
+      return null
+    } catch (err: any) {
+      console.error(
+        `Error fetching tester by email ${email}:`,
+        err.response?.data || err.message
+      )
+      return null
+    }
   }
 }
 
