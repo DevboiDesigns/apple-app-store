@@ -25,13 +25,13 @@ A TypeScript library for interacting with Apple's App Store Connect API and Stor
 Install the package using npm:
 
 ```bash
-npm install @devboidesigns/npm-template
+npm install apple-api-library
 ```
 
 Or using yarn:
 
 ```bash
-yarn add @devboidesigns/npm-template
+yarn add apple-api-library
 ```
 
 ### Peer Dependencies
@@ -120,7 +120,7 @@ APP_IS_LOCAL=true  # Set to "true" if running locally (reads key from file path)
 ### Basic Setup
 
 ```typescript
-import { AppStoreLib } from '@devboidesigns/npm-template'
+import { AppStoreLib } from 'apple-api-library'
 
 // Initialize the library
 const appStore = new AppStoreLib()
@@ -133,7 +133,7 @@ console.log('Apps:', apps)
 ### Beta Tester Management
 
 ```typescript
-import { AppStoreBetaTesterLib } from '@devboidesigns/npm-template'
+import { AppStoreBetaTesterLib } from 'apple-api-library'
 
 // Initialize the beta tester library
 const betaTesterLib = new AppStoreBetaTesterLib()
@@ -173,7 +173,7 @@ Generates a JWT token for Apple API authentication.
 **Example:**
 
 ```typescript
-import { AppleStoreKitToken } from '@devboidesigns/npm-template'
+import { AppleStoreKitToken } from 'apple-api-library'
 
 // Generate token for App Store Connect API
 const connectToken = AppleStoreKitToken.token('connect')
@@ -464,7 +464,7 @@ Tests the Apple JWT token by making a request to the App Store Connect API.
 **Example:**
 
 ```typescript
-import { TestNotification } from '@devboidesigns/npm-template'
+import { TestNotification } from 'apple-api-library'
 
 try {
   await TestNotification.test()
@@ -483,7 +483,7 @@ Sends a test notification to the StoreKit API. **Note:** This requires at least 
 **Example:**
 
 ```typescript
-import { TestNotification } from '@devboidesigns/npm-template'
+import { TestNotification } from 'apple-api-library'
 
 try {
   await TestNotification.testNotification()
@@ -500,7 +500,7 @@ try {
 ### Example 1: Managing Beta Testers
 
 ```typescript
-import { AppStoreBetaTesterLib } from '@devboidesigns/npm-template'
+import { AppStoreBetaTesterLib } from 'apple-api-library'
 
 async function manageBetaTesters() {
   const betaLib = new AppStoreBetaTesterLib()
@@ -539,7 +539,7 @@ manageBetaTesters().catch(console.error)
 ### Example 2: Fetching App Information
 
 ```typescript
-import { AppStoreLib } from '@devboidesigns/npm-template'
+import { AppStoreLib } from 'apple-api-library'
 
 async function getAppInfo() {
   const appStore = new AppStoreLib()
@@ -561,7 +561,7 @@ getAppInfo().catch(console.error)
 ### Example 3: Testing API Connection
 
 ```typescript
-import { TestNotification } from '@devboidesigns/npm-template'
+import { TestNotification } from 'apple-api-library'
 
 async function testConnection() {
   try {
@@ -579,7 +579,7 @@ testConnection()
 ### Example 4: Bulk Beta Tester Management
 
 ```typescript
-import { AppStoreBetaTesterLib } from '@devboidesigns/npm-template'
+import { AppStoreBetaTesterLib } from 'apple-api-library'
 
 async function bulkAddTesters() {
   const betaLib = new AppStoreBetaTesterLib()
@@ -614,7 +614,7 @@ bulkAddTesters().catch(console.error)
 The library throws errors in various scenarios. Always wrap API calls in try-catch blocks:
 
 ```typescript
-import { AppStoreBetaTesterLib } from '@devboidesigns/npm-template'
+import { AppStoreBetaTesterLib } from 'apple-api-library'
 
 async function safeAddTester() {
   const betaLib = new AppStoreBetaTesterLib()
