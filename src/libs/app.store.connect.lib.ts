@@ -212,12 +212,12 @@ export class AppStoreBetaTesterLib {
 
 //**************** TEST SETUP ***********************/
 // Usage example: update "Public Testing" group to match a new email list
-;(async () => {
-  const service = new AppStoreBetaTesterLib()
-  await service.addTesterToGroupByName(
-    "Public Testing",
-    "sara@gmail.com",
-    "Christopher",
-    "Infinity"
-  )
-})()
+// ;(async () => {
+//   const service = new AppStoreBetaTesterLib()
+//   await service.addTesterToGroupByName(
+//     "Public Testing",
+//     "sara@gmail.com",
+//     "Christopher",
+//     "Infinity"
+//   )
+// })()
