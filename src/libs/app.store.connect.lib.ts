@@ -192,9 +192,12 @@ export class AppStoreBetaTesterLib {
 
           // Log full error response for debugging if we still don't have an ID
           if (!testerId) {
+            const errorJson = JSON.stringify(errorData, null, 2);
+            const errorJsonTruncated =
+              errorJson.length > 500 ? errorJson.substring(0, 500) + "..." : errorJson;
             console.log(
               `Error response structure (for debugging):`,
-              JSON.stringify(errorData, null, 2).substring(0, 500)
+              errorJsonTruncated
             )
           }
         }
