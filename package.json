@@ -14,7 +14,8 @@
   },
   "scripts": {
     "build": "tsup",
-    "test": "jest"
+    "test": "jest",
+    "release": "npm run build && sudo npm publish"
   },
   "author": "Christopher Hicks",
   "license": "ISC",
