@@ -1,6 +1,6 @@
 {
   "name": "apple-api-library",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A TypeScript library for interacting with Apple's App Store Connect API and StoreKit API.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -32,5 +32,13 @@
     "axios": "^1.9.0",
     "dotenv": "^16.5.0",
     "jsonwebtoken": "^9.0.2"
-  }
+  },
+  "keywords": [
+    "apple",
+    "app store connect",
+    "storekit",
+    "api",
+    "library",
+    "typescript"
+  ]
 }
